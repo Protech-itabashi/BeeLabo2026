@@ -211,3 +211,8 @@ function getGreeting(language) {
 }
 
 const greet = getGreeting("japanese"); // こんにちは
+
+/*
+    練習１
+    2 ~ 100 の数のうち素数を列挙（出力形式は問わない）
+*/
