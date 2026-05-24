@@ -26,7 +26,7 @@ function tick(){
     ctx.fillStyle = "#00ff37";
     ctx.fillRect(0, 400, 500, 500);
 
-    ctx.drawImage(cahractar, 0, 325, 90, 75);
+    ctx.drawImage(cahractar, X, 325, 90, 75);
 
     requestAnimationFrame(tick)
 
