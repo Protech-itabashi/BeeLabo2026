@@ -40,7 +40,7 @@ class Player {
         this.width = w;
         this.height = h;
         this.vy = 0;
-        this.ay = -2;
+        this.ay = GRAVITY;
         this.isGround = true;
     }
 
@@ -105,7 +105,7 @@ const COLOR_OBSTACLE = "#ba2f2f"
 
 // 速度系定数の定義
 const MOVE_SPEED = 2.0;
-const GRAVITY = 0.375;
+const GRAVITY = -2.0;
 
 // 横移動の速度
 const SPEED = 5.0;
@@ -151,7 +151,7 @@ function tick() {
                 player,
                 obstacle
             )
-            alert("ぶつかった！");
+            // alert("ぶつかった！");
         }
     }
 
