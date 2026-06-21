@@ -32,6 +32,9 @@ class Player {
     ay;
     isGround
 
+    jumpSound = new Audio("../sounds/se_jump.mp3")
+    hitSound = new Audio("../sounds/se_ぶつかる音.mp3")
+
     constructor(image, x,y,w,h){
         this.image = image
         this.x = x;
@@ -52,6 +55,7 @@ class Player {
         if (this.isGround) {
             this.isGround = false 
             this.vy = 30; 
+            this.jumpSound.play();
         }
     }
     
@@ -66,9 +70,17 @@ class Player {
             this.vy = 0;
             this.y = 0;
             this.isGround = true;
+            this.jumpSound.pause();
+            this.jumpSound.currentTime = 0;
         }
     
+
     }
+
+    hit(){
+        this.hitSound.play();
+    }
+
     checkCollision(obstacle){
         return !(
             this.x + this.width < obstacle.x ||
@@ -82,6 +94,8 @@ class Player {
 
 const character = new Image();
 character.src = "../images/bouhuman.png";
+
+
 
 
 const CANVAS_WIDTH = 500;
@@ -109,10 +123,12 @@ const SCROLL_SPEED = 10.0;
 const player = new Player(character, 0, 0, CHARACTER_WIDTH, CHARACTER_HEIGHT)
 
 const obstacles = [
-    new Obstacle(250, 0, 50, 75),
-    new Obstacle(550, 0, 50, 75),
+    //new Obstacle(250, 0, 50, 75),
+    //new Obstacle(550, 0, 50, 75),
     new Obstacle(750, 0, 50, 75),
-    new Obstacle(950, 0, 50, 75),
+    new Obstacle(1050, 0, 50, 75),
+    new Obstacle(1350, 0, 50, 75),
+    new Obstacle(1650, 0, 50, 75),
 ];
 
  
@@ -142,7 +158,8 @@ function tick() {
                 player, 
                 obstacle
             )
-        return
+           player.hit();
+        return;
         
     }
 }
