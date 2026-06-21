@@ -1,10 +1,17 @@
 const canvas = document.getElementById("mainCanvas");
 const ctx = canvas.getContext("2d");
+
 const character = new Image();
 character.src = "../images/BlobStand.png";
 const SPEED = 4.0;
 const SCROLL_SPEED = 7.0;
 const THEGROUND = 400 - 51 + 8;
+const PLAYER_WIDTH = 75;
+const PLAYER_HEIGHT = 51;
+const GROUND_HEIGHT = 410; //キャラクターや障害物のGROUND
+const CANVAS_WIDTH = 500;
+const CANVAS_HEIGHT = 500;
+const CANVASGROUND_HEIGHT = CANVAS_HEIGHT - 400; //見た目のGROUND
 
 
 class Obstacle {
@@ -22,7 +29,7 @@ class Obstacle {
 
     draw(ctx){
     ctx.fillStyle = "#bd2828"
-    ctx.fillRect(this.x, 410 - this.height - this.y, this.width, this.height)
+    ctx.fillRect(this.x, GROUND_HEIGHT - this.height - this.y, this.width, this.height)
     }
 }
 
@@ -48,7 +55,7 @@ class Player {
     }
 
     draw(ctx){
-    ctx.drawImage(this.image, this.x, 410 - this.height - this.y, this.width, this.height)
+    ctx.drawImage(this.image, this.x, GROUND_HEIGHT - this.height - this.y, this.width, this.height)
     }
 
     //jump定義
@@ -86,9 +93,10 @@ class Player {
 
 // let x = 5;
 // let y = 400 - 51 + 8;
-const player = new Player(character, 0, 0, 75, 51)
 // let vy = 0; //y方向の速度
 // let ay = 2; //y方向の加速度
+
+const player = new Player(character, 0, 0, PLAYER_WIDTH, PLAYER_HEIGHT)
 
 let frame = 0;
 
@@ -107,10 +115,10 @@ function tick(){
 
 
     ctx.fillStyle = "#1a5585"
-    ctx.fillRect(0, 0, 500, 400)
+    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
 
     ctx.fillStyle = "#256d17"
-    ctx.fillRect(0, 400, 500, 100)
+    ctx.fillRect(0, 400, CANVAS_WIDTH, CANVASGROUND_HEIGHT)
 
 
     player.draw(ctx);
@@ -154,6 +162,6 @@ window.addEventListener("keydown", (e) => {
 
 
 
-
+//クラスの頭文字は大文字、コンストラクター（const）の頭文字は小文字にすることが多い
 //よく出てくる数とか色は名前がついてたほうがわかりやすい
 //character width and height とおくとわかりやすい
