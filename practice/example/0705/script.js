@@ -24,7 +24,6 @@ class Obstacle {
 
 // プレイヤークラス
 class Player {
-    image;
     x;
     y;
     width;
@@ -32,13 +31,17 @@ class Player {
     vy;
     ay;
     isGround;
+    isAlive;
 
     // 効果音の読み込み
     jumpSound = new Audio("../sounds/se_jump.mp3");
     hitSound = new Audio("../sounds/se_hit.mp3");
 
-    constructor(image, x, y, w, h) {
-        this.image = image;
+    // キャラクタ画像の読み込み
+    baseImage = new Image();
+    diedImage = new Image();
+
+    constructor(x, y, w, h) {
         this.x = x;
         this.y = y;
         this.width = w;
@@ -46,11 +49,15 @@ class Player {
         this.vy = 0;
         this.ay = GRAVITY;
         this.isGround = true;
+        this.isAlive = true;
+
+        this.baseImage.src = "../images/character_stand.png";
+        this.diedImage.src = "../images/character_died.png";
     }
 
     // プレイヤーの描画
     draw(ctx) {
-        ctx.drawImage(this.image, this.x, SKY_HEIGHT - this.height - this.y, this.width, this.height);
+        ctx.drawImage(this.isAlive ? this.baseImage : this.diedImage, this.x, SKY_HEIGHT - this.height - this.y, this.width, this.height);
     }
 
     // ジャンプ
@@ -82,6 +89,7 @@ class Player {
     }
 
     hit() {
+        this.isAlive = false;
         this.hitSound.play();
     }
 
@@ -95,9 +103,10 @@ class Player {
     }
 }
 
-// キャラクター画像の定義
-const character = new Image();
-character.src = "../images/character_stand.png";
+// ゲームの状態の定義
+const GAME_STATE_TITLE = 0;
+const GAME_STATE_INGAME = 1;
+const GAME_STATE_GAMEOVER = 2;
 
 // 画面幅・高さの定義
 const CANVAS_WIDTH = 500;
@@ -123,8 +132,9 @@ const SPEED = 5.0;
 const SCROLL_SPEED = 10.0;
 
 // プレイヤー情報
-const player = new Player(character, 0, 0, CHARACTER_WIDTH, CHARACTER_HEIGHT);
+const player = new Player(0, 0, CHARACTER_WIDTH, CHARACTER_HEIGHT);
 let frame = 0;
+let gameState = GAME_STATE_TITLE;
 
 const obstacles = [
     new Obstacle(550, 0, 25, 65),
@@ -134,37 +144,48 @@ const obstacles = [
 ];
 
 function tick() {
-    // フレームのカウント
-    frame++;
+    if (gameState === GAME_STATE_TITLE) {
+        // (x: 0, y: 0) から画面サイズの四角形で塗りつぶし
+        ctx.fillStyle = COLOR_SKY;
+        ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-    // プレイヤーの情報を更新
-    player.update();
+        // 地面の描画
+        ctx.fillStyle = COLOR_GROUND;
+        ctx.fillRect(0, SKY_HEIGHT, CANVAS_WIDTH, GROUND_HEIGHT)
+    } else if (gameState === GAME_STATE_INGAME) {
+        // フレームのカウント
+        frame++;
 
-    // (x: 0, y: 0) から画面サイズの四角形で塗りつぶし
-    ctx.fillStyle = COLOR_SKY;
-    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+        // プレイヤーの情報を更新
+        player.update();
 
-    // 地面の描画
-    ctx.fillStyle = COLOR_GROUND;
-    ctx.fillRect(0, SKY_HEIGHT, CANVAS_WIDTH, GROUND_HEIGHT);
+        // (x: 0, y: 0) から画面サイズの四角形で塗りつぶし
+        ctx.fillStyle = COLOR_SKY;
+        ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-    // キャラクター画像の描画
-    player.draw(ctx);
+        // 地面の描画
+        ctx.fillStyle = COLOR_GROUND;
+        ctx.fillRect(0, SKY_HEIGHT, CANVAS_WIDTH, GROUND_HEIGHT);
 
-    // 障害物の描画
-    for (const obstacle of obstacles) {
-        obstacle.x -= SCROLL_SPEED;
-        obstacle.draw(ctx);
+        // キャラクター画像の描画
+        player.draw(ctx);
 
-        // 障害物との衝突判定
-        if (player.checkCollision(obstacle)) {
-            console.log(
-                player,
-                obstacle
-            )
-            player.hit();
-            // alert("ぶつかった！");
-            return;
+        // 障害物の描画
+        for (const obstacle of obstacles) {
+            obstacle.x -= SCROLL_SPEED;
+            obstacle.draw(ctx);
+
+            // 障害物との衝突判定
+            if (player.checkCollision(obstacle)) {
+                console.log(
+                    player,
+                    obstacle
+                )
+                player.hit();
+                // alert("ぶつかった！");
+                player.draw(ctx)
+                return;
+            }
         }
     }
 
@@ -177,20 +198,28 @@ requestAnimationFrame(tick)
 
 // キーボード操作
 window.addEventListener("keydown", (e) => {
-    // 右移動
-    if (e.key == "ArrowRight") {
-        player.x += SPEED
-    }
+    console.log(e.key)
+    if (gameState === GAME_STATE_TITLE) {
+        if (e.key == " " || e.key == "Enter") {
+            gameState = GAME_STATE_INGAME;
+            console.log("gameState: ", gameState)
+        }
+    } else if (gameState === GAME_STATE_INGAME) {
+        // 右移動
+        if (e.key == "ArrowRight") {
+            player.x += SPEED
+        }
 
-    // 左移動
-    if (e.key == "ArrowLeft") {
-        player.x -= SPEED
+        // 左移動
+        if (e.key == "ArrowLeft") {
+            player.x -= SPEED
+            
+        } 
         
-    } 
-    
-    // ジャンプ
-    if (e.key == "ArrowUp") {
-        player.jump();
+        // ジャンプ
+        if (e.key == "ArrowUp") {
+            player.jump();
+        }
     }
 });
 
