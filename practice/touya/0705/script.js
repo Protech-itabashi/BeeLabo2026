@@ -23,20 +23,22 @@ class Obstacle {
 }
 
 class Player {
-    image;
     x;
     y;
     width;
     height;
     vy;
     ay;
-    isGround
+    isGround;
+    isAlibve;
 
     jumpSound = new Audio("../sounds/se_jump.mp3")
     hitSound = new Audio("../sounds/se_ぶつかる音.mp3")
 
-    constructor(image, x,y,w,h){
-        this.image = image
+    baseImage = new Image();
+    diedImage = new Image();
+
+    constructor(x,y,w,h){
         this.x = x;
         this.y = y;
         this.width = w;
@@ -44,10 +46,14 @@ class Player {
         this.vy = 0;
         this.ay = -2;
         this.isGround = true;
+        this.isAlibve = true;
+
+        this.baseImage.src = "../images/bouhuman.png";
+        this.diedImage.src = "../images/gameover.png";
     }
 
     draw(ctx){
-        ctx.drawImage(this.image, this.x, SKY_HEIGHT-this.height-this.y, this.width, this.height);
+        ctx.drawImage(this.isAlibve ? this.baseImage : this.diedImage, this.x, SKY_HEIGHT-this.height-this.y, this.width, this.height);
 
     }
      jump() {
@@ -78,6 +84,7 @@ class Player {
     }
 
     hit(){
+        this.isAlibve = false;
         this.hitSound.play();
     }
 
@@ -92,11 +99,9 @@ class Player {
 
 }
 
-const character = new Image();
-character.src = "../images/bouhuman.png";
-
-
-
+const GAME_STATE_TITLE = 0;
+const GAME_STATE_IMAGE = 1;
+const GAME_STATE_GAMEOVER = 2;
 
 const CANVAS_WIDTH = 500;
 const CANVAS_HEIGHT = 500;
@@ -120,7 +125,7 @@ const SPEED = 5.0;
 const SCROLL_SPEED = 10.0;
 
 
-const player = new Player(character, 0, 0, CHARACTER_WIDTH, CHARACTER_HEIGHT)
+const player = new Player(0, 0, CHARACTER_WIDTH, CHARACTER_HEIGHT)
 
 const obstacles = [
     new Obstacle(750, 0, 50, 75),
@@ -133,7 +138,18 @@ const obstacles = [
 
  
 let frame = 0;
+let gameState = GAME_STATE_TITLE;
+
+
 function tick() {
+    if (gameState === GAME_STATE_TITLE){
+         ctx.fillStyle = COLOR_SKY;
+         ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+         ctx.fillStyle = COLOR_GROUND;
+         ctx.fillRect(0, SKY_HEIGHT, CANVAS_WIDTH, GROUND_HEIGHT);
+    }else if(gameState === GAME_STATE_IMAGE){
+    
     frame++;
  
     player.update();
@@ -158,12 +174,14 @@ function tick() {
                 player, 
                 obstacle
             )
-           player.hit();
-        return;
+            player.hit();
+            player.draw(ctx)
+            return;
         
     }
 }
-    
+
+}    
  
     requestAnimationFrame(tick);
 }
@@ -174,20 +192,31 @@ requestAnimationFrame(tick)
 
 window.addEventListener("keydown", (e) => {
 
-    if (e.key == "ArrowRight") {
+    if (gameState === GAME_STATE_TITLE){
+        if(e.key == " "||e.key == "Enter"){
+            gameState = GAME_STATE_IMAGE;
+            console.log("gameState", gameState)
+        }
+    }else if (gameState === GAME_STATE_IMAGE){
+        if (e.key == "ArrowRight") {
         player.x += SPEED
     }
 
 
-    if (e.key == "ArrowLeft") {
+        if (e.key == "ArrowLeft") {
         player.x -= SPEED
         
     } 
      
-    if (e.key == "ArrowUp") {
+        if (e.key == "ArrowUp") {
         player.jump();
     }
 
+        
+        }
+    
 
-});
+
+
+ });
 
