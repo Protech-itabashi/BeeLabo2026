@@ -33,6 +33,10 @@ class Player {
     ay;
     isGround;
 
+    // 効果音の読み込み
+    jumpSound = new Audio("../sounds/se_jump.mp3");
+    hitSound = new Audio("../sounds/se_hit.mp3");
+
     constructor(image, x, y, w, h) {
         this.image = image;
         this.x = x;
@@ -55,6 +59,7 @@ class Player {
         if (this.isGround) {
             this.isGround = false // 地面から離す
             this.vy = 30; // 初速度を与える
+            this.jumpSound.play();
         }
     }
 
@@ -71,7 +76,13 @@ class Player {
             this.vy = 0;
             this.y = 0;
             this.isGround = true;
+            this.jumpSound.pause();
+            this.jumpSound.currentTime = 0;
         }
+    }
+
+    hit() {
+        this.hitSound.play();
     }
 
     checkCollision(obstacle) {
@@ -151,7 +162,9 @@ function tick() {
                 player,
                 obstacle
             )
+            player.hit();
             // alert("ぶつかった！");
+            return;
         }
     }
 
