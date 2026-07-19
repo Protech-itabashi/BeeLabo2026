@@ -1,6 +1,6 @@
 const canvas = document.getElementById("MainCanvas");
 const ctx = canvas.getContext("2d");
-const SCROLL_SPEED = 5.0
+const SCROLL_SPEED = 7.5
 const SPEED = 5.0
 const CANVAS_HEIGHT = 500
 const CANVAS_WIDTH = 500
@@ -12,7 +12,15 @@ const GROUND_POS = SKY_HEIGHT-CHARACTER_HEIGHT
 const GAME_STATE_TITLE=0;
 const GAME_STATE_INGAME=1;
 const GAME_STATE_GAMEOVER=2;
+const MIN_INTERVAL = 400;
+const MAX_INTERVAL = 600;
+const MIN_OBSTACLE_WIDTH = 30;
+const MAX_OBSTACLE_WIDTH = 60;
 
+function getRandomArbitrary(min,max) {
+    return Math.random() * (max - min) + min;
+
+}
 
 class Obstacle {
     x;
@@ -128,13 +136,14 @@ let frame = 0;
 let vy = 0 //yのデフォルトの速度
 let ay = 2 //yの加速度
 let isGround = true;//キャラが地面にいるか
+let distance = 0;
 
 const obstacles = [
     new Obstacle(450, 0, 50, 100),
-    new Obstacle(650, 0, 50, 100),
     new Obstacle(850, 0, 50, 100),
-    new Obstacle(1050, 0, 50, 100),
     new Obstacle(1250, 0, 50, 100),
+    new Obstacle(1650, 0, 50, 100),
+    new Obstacle(2050, 0, 50, 100),
 ];
 
 function tick(){
@@ -145,8 +154,10 @@ function tick(){
         ctx.fillRect(0, 400, 500, 500);
 
     }else if(gameState ===GAME_STATE_INGAME){
-    frame++;
-    
+        frame++;
+        distance += SCROLL_SPEED;
+        player.update();
+   
         ctx.fillStyle = "#47f9ff";
         ctx.fillRect(0, 0, 500, 500);
         ctx.fillStyle = "#00ff37";
@@ -168,8 +179,28 @@ function tick(){
                 return
             }
         }
+        ctx.fillStyle = "#000000"
+        ctx.fillText(`${distance} cm`,20,20);
     
-    player.update();
+        for (let i = 0; i < obstacles.length; i++) {
+            if(obstacles[i].x + obstacles[i].width < 0){
+                obstacles.splice(i, 1);
+
+                obstacles.push(new Obstacle(
+                getRandomArbitrary(
+                    obstacles[obstacles.length-1].x + MIN_INTERVAL,
+                    obstacles[obstacles.length-1].x + MAX_INTERVAL
+                ),
+                0,
+                getRandomArbitrary(
+                    MIN_OBSTACLE_WIDTH,
+                    MAX_OBSTACLE_WIDTH
+                ),
+                100,
+            ));
+
+            }
+        }
 }
     requestAnimationFrame(tick)
 
