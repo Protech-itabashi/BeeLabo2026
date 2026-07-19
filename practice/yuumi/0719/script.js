@@ -22,6 +22,7 @@ const MIN_OBSTACLE_WIDTH = 20;
 const MAX_OBSTACLE_WIDTH = 40;
 
 
+
 class Obstacle {
     x;
     y;
@@ -125,7 +126,7 @@ class Player {
 // let ay = 2; //y方向の加速度
 const GAME_STATE_TITLE = 0;
 const GAME_STATE_INGAME = 1;
-const GAME_STATE_GAMEOVVER = 2;
+const GAME_STATE_GAMEOVER = 2;
 
 const player = new Player(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT)
 
@@ -150,6 +151,7 @@ function tick(){
 
         ctx.fillStyle = "#256d17"
         ctx.fillRect(0, 400, CANVAS_WIDTH, CANVASGROUND_HEIGHT)
+
 
         // draw(ctx)
         // ctx.drawImge(title);
@@ -209,6 +211,22 @@ function tick(){
 }
 requestAnimationFrame(tick)
 
+class Screen {
+    startImage = new Image()
+    endImage = new Image()
+    constructor(){
+        this.startImage.src = "../images/title.png";
+        this.endImage.src = "../images/GameEnd.png";
+    }
+    draw(ctx){
+        if(gameState === GAME_STATE_TITLE){
+            ctx.drawImage(this.startImage)
+        }
+        else if(gameState === GAME_STATE_GAMEOVER){
+            ctx.drawImage(this.endImage)
+        }
+    }
+}
 
 //キー押されてるかな？てやつ
 window.addEventListener("keydown", (e) => {
