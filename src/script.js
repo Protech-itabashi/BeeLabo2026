@@ -142,6 +142,25 @@ const obstacles = [
     new Obstacle(1700, 0, 30, 50),
 ];
 
+class Screen {
+    startImage = new Image()
+    endImage = new Image()
+    constructor(){
+        this.startImage.src = "./images/title.png";
+        this.endImage.src = "./images/GameEnd.png";
+    }
+    draw(ctx){
+        if(gameState === GAME_STATE_TITLE){
+            ctx.drawImage(this.startImage, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
+        }
+        else if(gameState === GAME_STATE_GAMEOVER){
+            ctx.drawImage(this.endImage, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
+            console.log('gameoba')
+        }
+    }
+}
+
+const screen = new Screen()
 
 //無限ループたち
 function tick(){
@@ -151,6 +170,8 @@ function tick(){
 
         ctx.fillStyle = "#256d17"
         ctx.fillRect(0, 400, CANVAS_WIDTH, CANVASGROUND_HEIGHT)
+
+        screen.draw(ctx);
 
 
         // draw(ctx)
@@ -184,7 +205,7 @@ function tick(){
                 console.log("atateruyo!");
                 player.hit();
                 player.draw(ctx) //ここで描画することで更新されるっぽい
-                return;
+                gameState = GAME_STATE_GAMEOVER;
             }
         }
             
@@ -204,29 +225,20 @@ function tick(){
                     ));
                 }
             }
+            
     
+    }
+    else if (gameState === GAME_STATE_GAMEOVER){
+        screen.draw(ctx);
+        ctx.fillText(`${distance}cm`, 15, 15);
+
     }
         requestAnimationFrame(tick);
 
 }
 requestAnimationFrame(tick)
 
-class Screen {
-    startImage = new Image()
-    endImage = new Image()
-    constructor(){
-        this.startImage.src = "./images/title.png";
-        this.endImage.src = "./images/GameEnd.png";
-    }
-    draw(ctx){
-        if(gameState === GAME_STATE_TITLE){
-            ctx.drawImage(this.startImage)
-        }
-        else if(gameState === GAME_STATE_GAMEOVER){
-            ctx.drawImage(this.endImage)
-        }
-    }
-}
+
 
 //キー押されてるかな？てやつ
 window.addEventListener("keydown", (e) => {
@@ -248,6 +260,13 @@ window.addEventListener("keydown", (e) => {
         }
         if (e.key == "ArrowUp"){
             player.jump();
+        }
+    }
+
+    else if (gameState === GAME_STATE_GAMEOVER){
+        console.log(e.key)
+        if (e.key == "Enter"){
+            gameState = GAME_STATE_TITLE;
         }
     }
 });
