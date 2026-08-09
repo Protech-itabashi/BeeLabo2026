@@ -29,16 +29,16 @@ class Obstacle {
     width;
     height;
 
-    constructor(x, y, w, h){
+    constructor(x, y, w, h) {
         this.x = x;
         this.y = y;
         this.width = w;
         this.height = h;
     }
 
-    draw(ctx){
-    ctx.fillStyle = "#bd2828"
-    ctx.fillRect(this.x, GROUND_HEIGHT - this.height - this.y, this.width, this.height)
+    draw(ctx) {
+        ctx.fillStyle = "#bd2828"
+        ctx.fillRect(this.x, GROUND_HEIGHT - this.height - this.y, this.width, this.height)
     }
 }
 
@@ -58,7 +58,7 @@ class Player {
     baseImage = new Image();
     diedImage = new Image();
 
-    constructor(x, y, w, h){
+    constructor(x, y, w, h) {
         this.x = x;
         this.y = y;
         this.width = w;
@@ -72,27 +72,27 @@ class Player {
         this.diedImage.src = "./images/BlobCollide.png";
     }
 
-    draw(ctx){
-    ctx.drawImage(this.isAlive ? this.baseImage : this.diedImage, this.x, GROUND_HEIGHT - this.height - this.y, this.width, this.height)
+    draw(ctx) {
+        ctx.drawImage(this.isAlive ? this.baseImage : this.diedImage, this.x, GROUND_HEIGHT - this.height - this.y, this.width, this.height)
     }
-//　条件 ? True時の命令 : False時の命令
+    //　条件 ? True時の命令 : False時の命令
 
     //jump定義
     jump() {
         if (this.isGround) {
-          this.isGround = false
-          this.vy = 25;
-          this.jumpSound.play();
-      }
+            this.isGround = false
+            this.vy = 25;
+            this.jumpSound.play();
+        }
     }
 
     //player情報更新定義
-    update(){
+    update() {
         if (this.isGround) return; //地面ついてたらすることないので帰ってください
         this.vy += this.ay;
         this.y += this.vy;
-    
-        if(this.y < 0){
+
+        if (this.y < 0) {
             this.vy = 0;
             this.y = 0;
             this.isGround = true
@@ -101,7 +101,7 @@ class Player {
         }
     }
 
-    hit(){
+    hit() {
         this.isAlive = false;
         this.hitSound.play();
         ctx.font = 'normal 15px SANS-SERIF'
@@ -109,7 +109,7 @@ class Player {
         ctx.fillText(`${distance}cm`, 15, 15);
     }
     //当たり判定
-    checkCollision(obstacle){
+    checkCollision(obstacle) {
         return !(
             this.x + this.width < obstacle.x ||
             this.x > obstacle.x + obstacle.width ||
@@ -135,25 +135,19 @@ let gameState = GAME_STATE_TITLE;
 let distance = 0;
 
 
-const obstacles = [
-    new Obstacle(500, 0, 30, 50),
-    new Obstacle(800, 0, 30, 50),
-    new Obstacle(1300, 0, 30, 50),
-    new Obstacle(1700, 0, 30, 50),
-];
+const obstacles = [];
 
 class Screen {
     startImage = new Image()
     endImage = new Image()
-    constructor(){
+    constructor() {
         this.startImage.src = "./images/title.png";
         this.endImage.src = "./images/GameEnd.png";
     }
-    draw(ctx){
-        if(gameState === GAME_STATE_TITLE){
+    draw(ctx) {
+        if (gameState === GAME_STATE_TITLE) {
             ctx.drawImage(this.startImage, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
-        }
-        else if(gameState === GAME_STATE_GAMEOVER){
+        } else if (gameState === GAME_STATE_GAMEOVER) {
             ctx.drawImage(this.endImage, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
             console.log('gameoba')
         }
@@ -163,8 +157,8 @@ class Screen {
 const screen = new Screen()
 
 //無限ループたち
-function tick(){
-    if (gameState === GAME_STATE_TITLE){
+function tick() {
+    if (gameState === GAME_STATE_TITLE) {
         ctx.fillStyle = "#1a5585"
         ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
 
@@ -177,8 +171,21 @@ function tick(){
         // draw(ctx)
         // ctx.drawImge(title);
 
-    }
-    else if (gameState === GAME_STATE_INGAME){
+    } else if (gameState === GAME_STATE_INGAME) {
+        if (obstacles.length == 0) {
+            obstacles.push(new Obstacle(
+                getRandomArbitrary(CANVAS_WIDTH + MIN_INTERVAL, CANVAS_WIDTH + MAX_INTERVAL),
+                0,
+                getRandomArbitrary(MIN_OBSTACLE_WIDTH, MAX_OBSTACLE_WIDTH),
+                60,
+            ));
+            obstacles.push(new Obstacle(
+                getRandomArbitrary(obstacles[obstacles.length - 1].x + MIN_INTERVAL, obstacles[obstacles.length - 1].x + MAX_INTERVAL),
+                0,
+                getRandomArbitrary(MIN_OBSTACLE_WIDTH, MAX_OBSTACLE_WIDTH),
+                60,
+            ));
+        }
         console.log("O")
         frame++;
         distance += SCROLL_SPEED;
@@ -197,10 +204,10 @@ function tick(){
         player.draw(ctx);
         //ctx.drawImage(character, x, y, 75, 51);
 
-        for(const obstacle of obstacles){
+        for (const obstacle of obstacles) {
             obstacle.x -= SCROLL_SPEED;
             obstacle.draw(ctx);
-            
+
             if (player.checkCollision(obstacle)) {
                 console.log("atateruyo!");
                 player.hit();
@@ -208,32 +215,34 @@ function tick(){
                 gameState = GAME_STATE_GAMEOVER;
             }
         }
-            
-            ctx.font = 'normal 15px SANS-SERIF'
-            ctx.fillStyle = "#ffffff"
-            ctx.fillText(`${distance}cm`, 15, 15);
 
-            for (let i = 0; i < obstacles.length; i++) {
-                if (obstacles[i].x + obstacles[i].width < 0){
-                    obstacles.splice(i, 1);
+        ctx.font = 'normal 15px SANS-SERIF'
+        ctx.fillStyle = "#ffffff"
+        ctx.fillText(`${distance}cm`, 15, 15);
 
-                    obstacles.push(new Obstacle(
-                        getRandomArbitrary(obstacles[obstacles.length - 1].x + MIN_INTERVAL, obstacles[obstacles.length - 1].x + MAX_INTERVAL),
-                        0,
-                        getRandomArbitrary(MIN_OBSTACLE_WIDTH, MAX_OBSTACLE_WIDTH),
-                        60,
-                    ));
-                }
+        for (let i = 0; i < obstacles.length; i++) {
+            if (obstacles[i].x + obstacles[i].width < 0) {
+                obstacles.splice(i, 1);
+
+
+
+                obstacles.push(new Obstacle(
+                    getRandomArbitrary(obstacles[obstacles.length - 1].x + MIN_INTERVAL, obstacles[obstacles.length - 1].x + MAX_INTERVAL),
+                    0,
+                    getRandomArbitrary(MIN_OBSTACLE_WIDTH, MAX_OBSTACLE_WIDTH),
+                    60,
+                ));
+
             }
-            
-    
-    }
-    else if (gameState === GAME_STATE_GAMEOVER){
+        }
+
+
+    } else if (gameState === GAME_STATE_GAMEOVER) {
         screen.draw(ctx);
         ctx.fillText(`${distance}cm`, 15, 15);
 
     }
-        requestAnimationFrame(tick);
+    requestAnimationFrame(tick);
 
 }
 requestAnimationFrame(tick)
@@ -242,31 +251,32 @@ requestAnimationFrame(tick)
 
 //キー押されてるかな？てやつ
 window.addEventListener("keydown", (e) => {
-    if (gameState === GAME_STATE_TITLE){
-        if (e.key == " "){
+    if (gameState === GAME_STATE_TITLE) {
+        if (e.key == " ") {
             gameState = GAME_STATE_INGAME;
         }
     }
 
-    else if (gameState === GAME_STATE_INGAME){
-        if(e.key == "ArrowRight"){
+    else if (gameState === GAME_STATE_INGAME) {
+        if (e.key == "ArrowRight") {
             //character.src = "./images/BlobStand.png";
             player.x += SPEED
         }
 
-        if(e.key == "ArrowLeft"){
+        if (e.key == "ArrowLeft") {
             //character.src = "./images/BlobStandBack.png";
             player.x -= SPEED
         }
-        if (e.key == "ArrowUp"){
+        if (e.key == "ArrowUp") {
             player.jump();
         }
     }
 
-    else if (gameState === GAME_STATE_GAMEOVER){
+    else if (gameState === GAME_STATE_GAMEOVER) {
         console.log(e.key)
-        if (e.key == "Enter"){
+        if (e.key == "Enter") {
             gameState = GAME_STATE_TITLE;
+            reset()
         }
     }
 });
@@ -279,3 +289,11 @@ window.addEventListener("keydown", (e) => {
 //よく出てくる数とか色は名前がついてたほうがわかりやすい
 //character width and height とおくとわかりやすい
 //src とは：　source
+
+function reset() {
+    player.isAlive = true
+    player.isGround = true
+    player.x = 0
+    player.y = 0
+    obstacles.splice(0)
+}
