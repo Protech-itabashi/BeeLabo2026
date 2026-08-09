@@ -218,7 +218,7 @@ function tick() {
 
         ctx.font = 'normal 15px SANS-SERIF'
         ctx.fillStyle = "#ffffff"
-        ctx.fillText(`${distance}cm`, 15, 15);
+        ctx.fillText(`${distance / 100}m`, 15, 15);
 
         for (let i = 0; i < obstacles.length; i++) {
             if (obstacles[i].x + obstacles[i].width < 0) {
@@ -239,7 +239,7 @@ function tick() {
 
     } else if (gameState === GAME_STATE_GAMEOVER) {
         screen.draw(ctx);
-        ctx.fillText(`${distance}cm`, 15, 15);
+        ctx.fillText(`${distance / 100}m`, 15, 15);
 
     }
     requestAnimationFrame(tick);
@@ -296,4 +296,5 @@ function reset() {
     player.x = 0
     player.y = 0
     obstacles.splice(0)
+    distance = 0
 }
