@@ -1,5 +1,6 @@
 const canvas = document.getElementById("mainCanvas");
 const ctx = canvas.getContext("2d");
+const input = document.getElementById("BPM");
 
 function getRandomArbitrary(min, max) {
     return Math.random() * (max - min) + min;
@@ -21,6 +22,9 @@ const CANVASGROUND_HEIGHT = CANVAS_HEIGHT - 400; //見た目のGROUND
 const MIN_OBSTACLE_WIDTH = 20;
 const MAX_OBSTACLE_WIDTH = 40;
 
+let BPM = 0
+let timer
+timer = 0;
 
 
 class Obstacle {
@@ -172,21 +176,22 @@ function tick() {
         // ctx.drawImge(title);
 
     } else if (gameState === GAME_STATE_INGAME) {
-        if (obstacles.length == 0) {
-            obstacles.push(new Obstacle(
-                getRandomArbitrary(CANVAS_WIDTH + MIN_INTERVAL, CANVAS_WIDTH + MAX_INTERVAL),
-                0,
-                getRandomArbitrary(MIN_OBSTACLE_WIDTH, MAX_OBSTACLE_WIDTH),
-                60,
-            ));
-            obstacles.push(new Obstacle(
-                getRandomArbitrary(obstacles[obstacles.length - 1].x + MIN_INTERVAL, obstacles[obstacles.length - 1].x + MAX_INTERVAL),
-                0,
-                getRandomArbitrary(MIN_OBSTACLE_WIDTH, MAX_OBSTACLE_WIDTH),
-                60,
-            ));
-        }
-        console.log("O")
+        // if (obstacles.length == 0) {
+        //     obstacles.push(new Obstacle(
+        //         getRandomArbitrary(CANVAS_WIDTH + MIN_INTERVAL, CANVAS_WIDTH + MAX_INTERVAL),
+        //         0,
+        //         getRandomArbitrary(MIN_OBSTACLE_WIDTH, MAX_OBSTACLE_WIDTH),
+        //         60,
+        //     ));
+        //     obstacles.push(new Obstacle(
+        //         getRandomArbitrary(obstacles[obstacles.length - 1].x + MIN_INTERVAL, obstacles[obstacles.length - 1].x + MAX_INTERVAL),
+        //         0,
+        //         getRandomArbitrary(MIN_OBSTACLE_WIDTH, MAX_OBSTACLE_WIDTH),
+        //         60,
+        //     ));
+        // }
+        // console.log("O")
+        // console.log(BPM)
         frame++;
         distance += SCROLL_SPEED;
         // x = (x + frame / 50) % 500;
@@ -203,6 +208,14 @@ function tick() {
 
         player.draw(ctx);
         //ctx.drawImage(character, x, y, 75, 51);
+        
+        timer++;
+
+        if(timer >= BPM){
+            console.log("beat");
+            timer -= BPM;
+        }
+
 
         for (const obstacle of obstacles) {
             obstacle.x -= SCROLL_SPEED;
@@ -283,7 +296,10 @@ window.addEventListener("keydown", (e) => {
 //押されたらこうしてねーっていう範囲の中に動きを指定しないと動いてくれない
 //jsはfunctionなら呼び出した後に定義書いても大丈夫
 
-
+input.addEventListener("change", (e) => {
+    BPM = 3600 / Number(Number(e.target.value));
+    console.log(BPM);
+})
 
 //クラスの頭文字は大文字、コンストラクター（const）の頭文字は小文字にすることが多い
 //よく出てくる数とか色は名前がついてたほうがわかりやすい
