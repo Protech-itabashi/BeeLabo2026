@@ -11,7 +11,7 @@ title.src = "./images/PressSpace.png";
 const MIN_INTERVAL = 200;
 const MAX_INTERVAL = 500;
 const SPEED = 4.0;
-const SCROLL_SPEED = 8.0;
+const SCROLL_SPEED = 10.0;
 const THEGROUND = 400 - 51 + 8;
 const PLAYER_WIDTH = 75;
 const PLAYER_HEIGHT = 51;
@@ -25,6 +25,7 @@ const MAX_OBSTACLE_WIDTH = 40;
 let BPM = 0
 let timer
 timer = 0;
+tickSound = new Audio("./sounds/se_tick.mp3")
 
 
 class Obstacle {
@@ -68,7 +69,7 @@ class Player {
         this.width = w;
         this.height = h;
         this.vy = 0;
-        this.ay = -2;
+        this.ay = -3;
         this.isGround = true;
         this.isAlive = true;
 
@@ -85,7 +86,7 @@ class Player {
     jump() {
         if (this.isGround) {
             this.isGround = false
-            this.vy = 25;
+            this.vy = 35;
             this.jumpSound.play();
         }
     }
@@ -137,7 +138,6 @@ const player = new Player(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT)
 let frame = 0;
 let gameState = GAME_STATE_TITLE;
 let distance = 0;
-
 
 const obstacles = [];
 
@@ -212,7 +212,11 @@ function tick() {
         timer++;
 
         if(timer >= BPM){
+            tickSound.pause();
+            tickSound.currentTime = 0;
             console.log("beat");
+            tickSound.play();
+            obstacles.push(new Obstacle(785, 10, 20, 50));
             timer -= BPM;
         }
 
@@ -239,12 +243,12 @@ function tick() {
 
 
 
-                obstacles.push(new Obstacle(
-                    getRandomArbitrary(obstacles[obstacles.length - 1].x + MIN_INTERVAL, obstacles[obstacles.length - 1].x + MAX_INTERVAL),
-                    0,
-                    getRandomArbitrary(MIN_OBSTACLE_WIDTH, MAX_OBSTACLE_WIDTH),
-                    60,
-                ));
+                // obstacles.push(new Obstacle(
+                //     getRandomArbitrary(obstacles[obstacles.length - 1].x + MIN_INTERVAL, obstacles[obstacles.length - 1].x + MAX_INTERVAL),
+                //     0,
+                //     getRandomArbitrary(MIN_OBSTACLE_WIDTH, MAX_OBSTACLE_WIDTH),
+                //     60,
+                // ));
 
             }
         }
@@ -300,6 +304,7 @@ input.addEventListener("change", (e) => {
     BPM = 3600 / Number(Number(e.target.value));
     console.log(BPM);
 })
+//bpmをtick何個分か計算
 
 //クラスの頭文字は大文字、コンストラクター（const）の頭文字は小文字にすることが多い
 //よく出てくる数とか色は名前がついてたほうがわかりやすい
