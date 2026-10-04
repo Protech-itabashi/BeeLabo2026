@@ -319,3 +319,6 @@ function reset() {
     obstacles.splice(0)
     distance = 0
 }
+
+
+//youtube iframe player api で youtube musicのIDでいける (こっちのほうが再生開始とか空白が少ないから正確)
