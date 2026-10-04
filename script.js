@@ -1,5 +1,6 @@
 const canvas = document.getElementById("mainCanvas");
 const ctx = canvas.getContext("2d");
+const input = document.getElementById("BPM");
 
 function getRandomArbitrary(min, max) {
     return Math.random() * (max - min) + min;
@@ -10,8 +11,8 @@ title.src = "./images/PressSpace.png";
 const MIN_INTERVAL = 200;
 const MAX_INTERVAL = 500;
 const SPEED = 4.0;
-const SCROLL_SPEED = 8.0;
 const LIFE_SPEED = 0.1;
+const SCROLL_SPEED = 10.0;
 const THEGROUND = 400 - 51 + 8;
 const PLAYER_WIDTH = 75;
 const PLAYER_HEIGHT = 51;
@@ -22,6 +23,10 @@ const CANVASGROUND_HEIGHT = CANVAS_HEIGHT - 400; //見た目のGROUND
 const MIN_OBSTACLE_WIDTH = 20;
 const MAX_OBSTACLE_WIDTH = 40;
 
+let BPM = 0
+let timer
+timer = 0;
+tickSound = new Audio("./sounds/se_tick.mp3")
 
 
 class Obstacle {
@@ -65,7 +70,7 @@ class Player {
         this.width = w;
         this.height = h;
         this.vy = 0;
-        this.ay = -2;
+        this.ay = -3;
         this.isGround = true;
         this.isAlive = true;
 
@@ -82,7 +87,7 @@ class Player {
     jump() {
         if (this.isGround) {
             this.isGround = false
-            this.vy = 25;
+            this.vy = 35;
             this.jumpSound.play();
         }
     }
@@ -136,7 +141,6 @@ let gameState = GAME_STATE_TITLE;
 let distance = 0;
 let life = 100;
 
-
 const obstacles = [];
 
 class Screen {
@@ -174,21 +178,22 @@ function tick() {
         // ctx.drawImge(title);
 
     } else if (gameState === GAME_STATE_INGAME) {
-        if (obstacles.length == 0) {
-            obstacles.push(new Obstacle(
-                getRandomArbitrary(CANVAS_WIDTH + MIN_INTERVAL, CANVAS_WIDTH + MAX_INTERVAL),
-                0,
-                getRandomArbitrary(MIN_OBSTACLE_WIDTH, MAX_OBSTACLE_WIDTH),
-                60,
-            ));
-            obstacles.push(new Obstacle(
-                getRandomArbitrary(obstacles[obstacles.length - 1].x + MIN_INTERVAL, obstacles[obstacles.length - 1].x + MAX_INTERVAL),
-                0,
-                getRandomArbitrary(MIN_OBSTACLE_WIDTH, MAX_OBSTACLE_WIDTH),
-                60,
-            ));
-        }
-        console.log("O")
+        // if (obstacles.length == 0) {
+        //     obstacles.push(new Obstacle(
+        //         getRandomArbitrary(CANVAS_WIDTH + MIN_INTERVAL, CANVAS_WIDTH + MAX_INTERVAL),
+        //         0,
+        //         getRandomArbitrary(MIN_OBSTACLE_WIDTH, MAX_OBSTACLE_WIDTH),
+        //         60,
+        //     ));
+        //     obstacles.push(new Obstacle(
+        //         getRandomArbitrary(obstacles[obstacles.length - 1].x + MIN_INTERVAL, obstacles[obstacles.length - 1].x + MAX_INTERVAL),
+        //         0,
+        //         getRandomArbitrary(MIN_OBSTACLE_WIDTH, MAX_OBSTACLE_WIDTH),
+        //         60,
+        //     ));
+        // }
+        // console.log("O")
+        // console.log(BPM)
         frame++;
         distance += SCROLL_SPEED;
         life -= LIFE_SPEED
@@ -212,6 +217,18 @@ function tick() {
 
         player.draw(ctx);
         //ctx.drawImage(character, x, y, 75, 51);
+
+        timer++;
+
+        if (timer >= BPM) {
+            tickSound.pause();
+            tickSound.currentTime = 0;
+            console.log("beat");
+            tickSound.play();
+            obstacles.push(new Obstacle(785, 10, 20, 50));
+            timer -= BPM;
+        }
+
 
         for (const obstacle of obstacles) {
             obstacle.x -= SCROLL_SPEED;
@@ -242,12 +259,12 @@ function tick() {
 
 
 
-                obstacles.push(new Obstacle(
-                    getRandomArbitrary(obstacles[obstacles.length - 1].x + MIN_INTERVAL, obstacles[obstacles.length - 1].x + MAX_INTERVAL),
-                    0,
-                    getRandomArbitrary(MIN_OBSTACLE_WIDTH, MAX_OBSTACLE_WIDTH),
-                    60,
-                ));
+                // obstacles.push(new Obstacle(
+                //     getRandomArbitrary(obstacles[obstacles.length - 1].x + MIN_INTERVAL, obstacles[obstacles.length - 1].x + MAX_INTERVAL),
+                //     0,
+                //     getRandomArbitrary(MIN_OBSTACLE_WIDTH, MAX_OBSTACLE_WIDTH),
+                //     60,
+                // ));
 
             }
         }
@@ -300,7 +317,11 @@ window.addEventListener("keydown", (e) => {
 //押されたらこうしてねーっていう範囲の中に動きを指定しないと動いてくれない
 //jsはfunctionなら呼び出した後に定義書いても大丈夫
 
-
+input.addEventListener("change", (e) => {
+    BPM = 3600 / Number(Number(e.target.value));
+    console.log(BPM);
+})
+//bpmをtick何個分か計算
 
 //クラスの頭文字は大文字、コンストラクター（const）の頭文字は小文字にすることが多い
 //よく出てくる数とか色は名前がついてたほうがわかりやすい
