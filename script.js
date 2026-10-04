@@ -11,6 +11,7 @@ title.src = "./images/PressSpace.png";
 const MIN_INTERVAL = 200;
 const MAX_INTERVAL = 500;
 const SPEED = 4.0;
+const LIFE_SPEED = 0.1;
 const SCROLL_SPEED = 10.0;
 const THEGROUND = 400 - 51 + 8;
 const PLAYER_WIDTH = 75;
@@ -138,6 +139,7 @@ const player = new Player(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT)
 let frame = 0;
 let gameState = GAME_STATE_TITLE;
 let distance = 0;
+let life = 100;
 
 const obstacles = [];
 
@@ -194,6 +196,7 @@ function tick() {
         // console.log(BPM)
         frame++;
         distance += SCROLL_SPEED;
+        life -= LIFE_SPEED
         // x = (x + frame / 50) % 500;
 
         player.update();
@@ -205,13 +208,19 @@ function tick() {
         ctx.fillStyle = "#256d17"
         ctx.fillRect(0, 400, CANVAS_WIDTH, CANVASGROUND_HEIGHT)
 
+        ctx.fillStyle = "#2d362d"
+        ctx.fillRect(0, 0, 100, 30)
+
+        ctx.fillStyle = "#00FF00"
+        ctx.fillRect(0, 0, CANVAS_WIDTH * 30)
+
 
         player.draw(ctx);
         //ctx.drawImage(character, x, y, 75, 51);
-        
+
         timer++;
 
-        if(timer >= BPM){
+        if (timer >= BPM) {
             tickSound.pause();
             tickSound.currentTime = 0;
             console.log("beat");
@@ -231,11 +240,18 @@ function tick() {
                 player.draw(ctx) //ここで描画することで更新されるっぽい
                 gameState = GAME_STATE_GAMEOVER;
             }
+        } if (life <= 0) {
+
+            console.log("atateruyo!");
+            player.hit();
+            player.draw(ctx) //ここで描画することで更新されるっぽい
+            gameState = GAME_STATE_GAMEOVER;
         }
 
         ctx.font = 'normal 15px SANS-SERIF'
         ctx.fillStyle = "#ffffff"
         ctx.fillText(`${distance / 100}m`, 15, 15);
+
 
         for (let i = 0; i < obstacles.length; i++) {
             if (obstacles[i].x + obstacles[i].width < 0) {
@@ -257,6 +273,7 @@ function tick() {
     } else if (gameState === GAME_STATE_GAMEOVER) {
         screen.draw(ctx);
         ctx.fillText(`${distance / 100}m`, 15, 15);
+
 
     }
     requestAnimationFrame(tick);
@@ -318,6 +335,7 @@ function reset() {
     player.y = 0
     obstacles.splice(0)
     distance = 0
+    life = 100
 }
 
 
