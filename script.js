@@ -209,11 +209,10 @@ function tick() {
         ctx.fillRect(0, 400, CANVAS_WIDTH, CANVASGROUND_HEIGHT)
 
         ctx.fillStyle = "#2d362d"
-        ctx.fillRect(0, 0, 100, 30)
+        ctx.fillRect(0, 0, CANVAS_WIDTH, 30)
 
         ctx.fillStyle = "#00FF00"
-        ctx.fillRect(0, 0, CANVAS_WIDTH * 30)
-
+        ctx.fillRect(0, 0, CANVAS_WIDTH * life / 100, 30)
 
         player.draw(ctx);
         //ctx.drawImage(character, x, y, 75, 51);
