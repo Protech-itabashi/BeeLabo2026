@@ -17,7 +17,7 @@ const THEGROUND = 400 - 51 + 8;
 const PLAYER_WIDTH = 75;
 const PLAYER_HEIGHT = 51;
 const GROUND_HEIGHT = 410; //キャラクターや障害物のGROUND
-const CANVAS_WIDTH = 500;
+const CANVAS_WIDTH = 1000;
 const CANVAS_HEIGHT = 500;
 const CANVASGROUND_HEIGHT = CANVAS_HEIGHT - 400; //見た目のGROUND
 const MIN_OBSTACLE_WIDTH = 20;
@@ -224,7 +224,7 @@ function tick() {
             tickSound.currentTime = 0;
             console.log("beat");
             tickSound.play();
-            obstacles.push(new Obstacle(785, 10, 20, 50));
+            obstacles.push(new Obstacle(1350, 10, 20, 50));
             timer -= BPM;
         }
 
