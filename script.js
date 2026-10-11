@@ -35,6 +35,8 @@ class Obstacle {
     width;
     height;
 
+    hitSound = new Audio("./sounds/se_collide.mp3");
+
     constructor(x, y, w, h) {
         this.x = x;
         this.y = y;
@@ -42,9 +44,42 @@ class Obstacle {
         this.height = h;
     }
 
+    hit() {
+        this.hitSound.pause();
+        this.hitSound.currentTime = 0;
+        this.hitSound.play();        
+    }
+
     draw(ctx) {
         ctx.fillStyle = "#bd2828"
         ctx.fillRect(this.x, GROUND_HEIGHT - this.height - this.y, this.width, this.height)
+    }
+}
+
+class EnergyDrink {
+    x;
+    y;
+    width;
+    height;
+
+    hitSound = new Audio("./sounds/se_opencan.mp3");
+
+    constructor(x, y, w, h) {
+        this.x = x;
+        this.y = y;
+        this.width = w;
+        this.height = h;
+    }
+
+    hit() {
+        this.hitSound.pause();
+        this.hitSound.currentTime = 0;
+        this.hitSound.play();        
+    }
+
+    draw(ctx) {
+        ctx.fillStyle = "#f039c8"
+        ctx.fillRect(this.x, GROUND_HEIGHT - this.height - this.y, this.width, 30)
     }
 }
 
@@ -59,7 +94,7 @@ class Player {
     isAlive;
 
     jumpSound = new Audio("./sounds/se_jump01.mp3");
-    hitSound = new Audio("./sounds/se_collide.mp3");
+    
 
     baseImage = new Image();
     diedImage = new Image();
@@ -92,6 +127,10 @@ class Player {
         }
     }
 
+    die(){
+        this.isAlive = false;
+    }
+
     //player情報更新定義
     update() {
         if (this.isGround) return; //地面ついてたらすることないので帰ってください
@@ -107,13 +146,8 @@ class Player {
         }
     }
 
-    hit() {
-        this.isAlive = false;
-        this.hitSound.play();
-        ctx.font = 'normal 15px SANS-SERIF'
-        ctx.fillStyle = "#ffffff"
-        ctx.fillText(`${distance}cm`, 15, 15);
-    }
+    
+    
     //当たり判定
     checkCollision(obstacle) {
         return !(
@@ -123,6 +157,7 @@ class Player {
             this.y < obstacle.y - obstacle.height
         )
     }
+
     //  || = 又は, && = かつ
 }
 
@@ -142,6 +177,7 @@ let distance = 0;
 let life = 100;
 
 const obstacles = [];
+const energydrinks = [];
 
 class Screen {
     startImage = new Image()
@@ -225,6 +261,7 @@ function tick() {
             console.log("beat");
             tickSound.play();
             obstacles.push(new Obstacle(1350, 10, 20, 50));
+            energydrinks.push(new EnergyDrink(1350, 100, 20, 50));
             timer -= BPM;
         }
 
@@ -235,11 +272,29 @@ function tick() {
 
             if (player.checkCollision(obstacle)) {
                 console.log("atateruyo!");
-                player.hit();
+                obstacle.hit();
+                ctx.font = 'normal 15px SANS-SERIF'
+                ctx.fillStyle = "#ffffff"
+                ctx.fillText(`${distance}cm`, 15, 15);
+                player.die();
                 player.draw(ctx) //ここで描画することで更新されるっぽい
                 gameState = GAME_STATE_GAMEOVER;
             }
-        } if (life <= 0) {
+        } 
+
+        for (const energydrink of energydrinks) {
+            energydrink.x -= SCROLL_SPEED;
+            energydrink.draw(ctx);
+
+            if (player.checkCollision(energydrink)) {
+                console.log("atateruyo!");
+                energydrink.hit();
+                player.draw(ctx) //ここで描画することで更新されるっぽい
+                life = Math.min(life + 10, 100);
+            }
+        } 
+        
+        if (life <= 0) {
 
             console.log("atateruyo!");
             player.hit();
