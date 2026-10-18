@@ -27,7 +27,14 @@ let BPM = 0
 let timer
 timer = 0;
 tickSound = new Audio("./sounds/se_tick.mp3")
+songSound = new Audio("./sounds/maou_short_14_shining_star.mp3")
+// songSound = new Audio("C:\\Users\\protech\\Documents\\GitHub\\BeeLabo2026\\sounds\\se_ditto.mp3")
 
+window.onload = () => {
+songSound.onload = () => {
+    console.log("loaded")
+    songSound.play()
+}}
 
 class Obstacle {
     x;
@@ -342,19 +349,31 @@ window.addEventListener("keydown", (e) => {
     if (gameState === GAME_STATE_TITLE) {
         if (e.key == " ") {
             gameState = GAME_STATE_INGAME;
+
+//             songSound.addEventListener("canplaythrough", () => {
+//   console.log("音声の再生準備ができました");
+//                             // songSound.pause();
+//             songSound.currentTime = 0;
+//             songSound.play().catch(error => {
+//     console.error("再生がブロックされました。ユーザー操作が必要です:", error);
+//   });;
+        // }
+    // }
+// });
+            
         }
     }
 
     else if (gameState === GAME_STATE_INGAME) {
-        if (e.key == "ArrowRight") {
-            //character.src = "./images/BlobStand.png";
-            player.x += SPEED
-        }
+        // if (e.key == "ArrowRight") {
+        //     //character.src = "./images/BlobStand.png";
+        //     player.x += SPEED
+        // }
 
-        if (e.key == "ArrowLeft") {
-            //character.src = "./images/BlobStandBack.png";
-            player.x -= SPEED
-        }
+        // if (e.key == "ArrowLeft") {
+        //     //character.src = "./images/BlobStandBack.png";
+        //     player.x -= SPEED
+        // }
         if (e.key == "ArrowUp") {
             player.jump();
         }
@@ -388,9 +407,10 @@ function reset() {
     player.x = 0
     player.y = 0
     obstacles.splice(0)
+    energydrinks.splice(0)
     distance = 0
     life = 100
 }
 
 
-//youtube iframe player api で youtube musicのIDでいける (こっちのほうが再生開始とか空白が少ないから正確)
+//youtube iframe player api で youtube musicのIDでいける (こっちのほうが再生開始とか空白が少ないから正確)←NO
