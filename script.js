@@ -23,18 +23,13 @@ const CANVASGROUND_HEIGHT = CANVAS_HEIGHT - 400; //見た目のGROUND
 const MIN_OBSTACLE_WIDTH = 20;
 const MAX_OBSTACLE_WIDTH = 40;
 
-let BPM = 0
-let timer
+let BPM = 0;
+let timer;
 timer = 0;
-tickSound = new Audio("./sounds/se_tick.mp3")
-songSound = new Audio("./sounds/maou_short_14_shining_star.mp3")
+tickSound = new Audio("./sounds/se_tick.mp3");
+songSound = new Audio("./sounds/maou_short_14_shining_star.mp3");
+songSound.loop = true;
 // songSound = new Audio("C:\\Users\\protech\\Documents\\GitHub\\BeeLabo2026\\sounds\\se_ditto.mp3")
-
-window.onload = () => {
-songSound.onload = () => {
-    console.log("loaded")
-    songSound.play()
-}}
 
 class Obstacle {
     x;
@@ -54,12 +49,17 @@ class Obstacle {
     hit() {
         this.hitSound.pause();
         this.hitSound.currentTime = 0;
-        this.hitSound.play();        
+        this.hitSound.play();
     }
 
     draw(ctx) {
-        ctx.fillStyle = "#bd2828"
-        ctx.fillRect(this.x, GROUND_HEIGHT - this.height - this.y, this.width, this.height)
+        ctx.fillStyle = "#bd2828";
+        ctx.fillRect(
+            this.x,
+            GROUND_HEIGHT - this.height - this.y,
+            this.width,
+            this.height,
+        );
     }
 }
 
@@ -81,12 +81,17 @@ class EnergyDrink {
     hit() {
         this.hitSound.pause();
         this.hitSound.currentTime = 0;
-        this.hitSound.play();        
+        this.hitSound.play();
     }
 
     draw(ctx) {
-        ctx.fillStyle = "#f039c8"
-        ctx.fillRect(this.x, GROUND_HEIGHT - this.height - this.y, this.width, 30)
+        ctx.fillStyle = "#f039c8";
+        ctx.fillRect(
+            this.x,
+            GROUND_HEIGHT - this.height - this.y,
+            this.width,
+            30,
+        );
     }
 }
 
@@ -101,7 +106,6 @@ class Player {
     isAlive;
 
     jumpSound = new Audio("./sounds/se_jump01.mp3");
-    
 
     baseImage = new Image();
     diedImage = new Image();
@@ -121,20 +125,26 @@ class Player {
     }
 
     draw(ctx) {
-        ctx.drawImage(this.isAlive ? this.baseImage : this.diedImage, this.x, GROUND_HEIGHT - this.height - this.y, this.width, this.height)
+        ctx.drawImage(
+            this.isAlive ? this.baseImage : this.diedImage,
+            this.x,
+            GROUND_HEIGHT - this.height - this.y,
+            this.width,
+            this.height,
+        );
     }
     //　条件 ? True時の命令 : False時の命令
 
     //jump定義
     jump() {
         if (this.isGround) {
-            this.isGround = false
+            this.isGround = false;
             this.vy = 35;
             this.jumpSound.play();
         }
     }
 
-    die(){
+    die() {
         this.isAlive = false;
     }
 
@@ -147,14 +157,12 @@ class Player {
         if (this.y < 0) {
             this.vy = 0;
             this.y = 0;
-            this.isGround = true
+            this.isGround = true;
             this.jumpSound.pause();
             this.jumpSound.currentTime = 0;
         }
     }
 
-    
-    
     //当たり判定
     checkCollision(obstacle) {
         return !(
@@ -162,7 +170,7 @@ class Player {
             this.x > obstacle.x + obstacle.width ||
             this.y - this.height > obstacle.y ||
             this.y < obstacle.y - obstacle.height
-        )
+        );
     }
 
     //  || = 又は, && = かつ
@@ -176,7 +184,7 @@ const GAME_STATE_TITLE = 0;
 const GAME_STATE_INGAME = 1;
 const GAME_STATE_GAMEOVER = 2;
 
-const player = new Player(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT)
+const player = new Player(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT);
 
 let frame = 0;
 let gameState = GAME_STATE_TITLE;
@@ -187,39 +195,37 @@ const obstacles = [];
 const energydrinks = [];
 
 class Screen {
-    startImage = new Image()
-    endImage = new Image()
+    startImage = new Image();
+    endImage = new Image();
     constructor() {
         this.startImage.src = "./images/title.png";
         this.endImage.src = "./images/GameEnd.png";
     }
     draw(ctx) {
         if (gameState === GAME_STATE_TITLE) {
-            ctx.drawImage(this.startImage, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
+            ctx.drawImage(this.startImage, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
         } else if (gameState === GAME_STATE_GAMEOVER) {
-            ctx.drawImage(this.endImage, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
-            console.log('gameoba')
+            ctx.drawImage(this.endImage, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            console.log("gameoba");
         }
     }
 }
 
-const screen = new Screen()
+const screen = new Screen();
 
 //無限ループたち
 function tick() {
     if (gameState === GAME_STATE_TITLE) {
-        ctx.fillStyle = "#1a5585"
-        ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
+        ctx.fillStyle = "#1a5585";
+        ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-        ctx.fillStyle = "#256d17"
-        ctx.fillRect(0, 400, CANVAS_WIDTH, CANVASGROUND_HEIGHT)
+        ctx.fillStyle = "#256d17";
+        ctx.fillRect(0, 400, CANVAS_WIDTH, CANVASGROUND_HEIGHT);
 
         screen.draw(ctx);
 
-
         // draw(ctx)
         // ctx.drawImge(title);
-
     } else if (gameState === GAME_STATE_INGAME) {
         // if (obstacles.length == 0) {
         //     obstacles.push(new Obstacle(
@@ -239,23 +245,22 @@ function tick() {
         // console.log(BPM)
         frame++;
         distance += SCROLL_SPEED;
-        life -= LIFE_SPEED
+        life -= LIFE_SPEED;
         // x = (x + frame / 50) % 500;
 
         player.update();
 
+        ctx.fillStyle = "#1a5585";
+        ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-        ctx.fillStyle = "#1a5585"
-        ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
+        ctx.fillStyle = "#256d17";
+        ctx.fillRect(0, 400, CANVAS_WIDTH, CANVASGROUND_HEIGHT);
 
-        ctx.fillStyle = "#256d17"
-        ctx.fillRect(0, 400, CANVAS_WIDTH, CANVASGROUND_HEIGHT)
+        ctx.fillStyle = "#2d362d";
+        ctx.fillRect(0, 0, CANVAS_WIDTH, 30);
 
-        ctx.fillStyle = "#2d362d"
-        ctx.fillRect(0, 0, CANVAS_WIDTH, 30)
-
-        ctx.fillStyle = "#00FF00"
-        ctx.fillRect(0, 0, CANVAS_WIDTH * life / 100, 30)
+        ctx.fillStyle = "#00FF00";
+        ctx.fillRect(0, 0, (CANVAS_WIDTH * life) / 100, 30);
 
         player.draw(ctx);
         //ctx.drawImage(character, x, y, 75, 51);
@@ -267,11 +272,10 @@ function tick() {
             tickSound.currentTime = 0;
             console.log("beat");
             tickSound.play();
-            obstacles.push(new Obstacle(1350, 10, 20, 50));
+            obstacles.push(new Obstacle(1330, 10, 20, 50));
             energydrinks.push(new EnergyDrink(1350, 100, 20, 50));
             timer -= BPM;
         }
-
 
         for (const obstacle of obstacles) {
             obstacle.x -= SCROLL_SPEED;
@@ -280,14 +284,14 @@ function tick() {
             if (player.checkCollision(obstacle)) {
                 console.log("atateruyo!");
                 obstacle.hit();
-                ctx.font = 'normal 15px SANS-SERIF'
-                ctx.fillStyle = "#ffffff"
+                ctx.font = "normal 15px SANS-SERIF";
+                ctx.fillStyle = "#ffffff";
                 ctx.fillText(`${distance}cm`, 15, 15);
                 player.die();
-                player.draw(ctx) //ここで描画することで更新されるっぽい
+                player.draw(ctx); //ここで描画することで更新されるっぽい
                 gameState = GAME_STATE_GAMEOVER;
             }
-        } 
+        }
 
         for (const energydrink of energydrinks) {
             energydrink.x -= SCROLL_SPEED;
@@ -296,29 +300,25 @@ function tick() {
             if (player.checkCollision(energydrink)) {
                 console.log("atateruyo!");
                 energydrink.hit();
-                player.draw(ctx) //ここで描画することで更新されるっぽい
+                player.draw(ctx); //ここで描画することで更新されるっぽい
                 life = Math.min(life + 10, 100);
             }
-        } 
-        
-        if (life <= 0) {
+        }
 
+        if (life <= 0) {
             console.log("atateruyo!");
             player.hit();
-            player.draw(ctx) //ここで描画することで更新されるっぽい
+            player.draw(ctx); //ここで描画することで更新されるっぽい
             gameState = GAME_STATE_GAMEOVER;
         }
 
-        ctx.font = 'normal 15px SANS-SERIF'
-        ctx.fillStyle = "#ffffff"
+        ctx.font = "normal 15px SANS-SERIF";
+        ctx.fillStyle = "#ffffff";
         ctx.fillText(`${distance / 100}m`, 15, 15);
-
 
         for (let i = 0; i < obstacles.length; i++) {
             if (obstacles[i].x + obstacles[i].width < 0) {
                 obstacles.splice(i, 1);
-
-
 
                 // obstacles.push(new Obstacle(
                 //     getRandomArbitrary(obstacles[obstacles.length - 1].x + MIN_INTERVAL, obstacles[obstacles.length - 1].x + MAX_INTERVAL),
@@ -326,23 +326,15 @@ function tick() {
                 //     getRandomArbitrary(MIN_OBSTACLE_WIDTH, MAX_OBSTACLE_WIDTH),
                 //     60,
                 // ));
-
             }
         }
-
-
     } else if (gameState === GAME_STATE_GAMEOVER) {
         screen.draw(ctx);
         ctx.fillText(`${distance / 100}m`, 15, 15);
-
-
     }
     requestAnimationFrame(tick);
-
 }
-requestAnimationFrame(tick)
-
-
+requestAnimationFrame(tick);
 
 //キー押されてるかな？てやつ
 window.addEventListener("keydown", (e) => {
@@ -350,21 +342,13 @@ window.addEventListener("keydown", (e) => {
         if (e.key == " ") {
             gameState = GAME_STATE_INGAME;
 
-//             songSound.addEventListener("canplaythrough", () => {
-//   console.log("音声の再生準備ができました");
-//                             // songSound.pause();
-//             songSound.currentTime = 0;
-//             songSound.play().catch(error => {
-//     console.error("再生がブロックされました。ユーザー操作が必要です:", error);
-//   });;
-        // }
-    // }
-// });
-            
+            // BGM を最初から再生
+            songSound.currentTime = 0;
+            songSound.play().catch((error) => {
+                console.error("BGMの再生に失敗しました:", error);
+            });
         }
-    }
-
-    else if (gameState === GAME_STATE_INGAME) {
+    } else if (gameState === GAME_STATE_INGAME) {
         // if (e.key == "ArrowRight") {
         //     //character.src = "./images/BlobStand.png";
         //     player.x += SPEED
@@ -377,13 +361,11 @@ window.addEventListener("keydown", (e) => {
         if (e.key == "ArrowUp") {
             player.jump();
         }
-    }
-
-    else if (gameState === GAME_STATE_GAMEOVER) {
-        console.log(e.key)
+    } else if (gameState === GAME_STATE_GAMEOVER) {
+        console.log(e.key);
         if (e.key == "Enter") {
             gameState = GAME_STATE_TITLE;
-            reset()
+            reset();
         }
     }
 });
@@ -393,7 +375,7 @@ window.addEventListener("keydown", (e) => {
 input.addEventListener("change", (e) => {
     BPM = 3600 / Number(Number(e.target.value));
     console.log(BPM);
-})
+});
 //bpmをtick何個分か計算
 
 //クラスの頭文字は大文字、コンストラクター（const）の頭文字は小文字にすることが多い
@@ -402,15 +384,14 @@ input.addEventListener("change", (e) => {
 //src とは：　source
 
 function reset() {
-    player.isAlive = true
-    player.isGround = true
-    player.x = 0
-    player.y = 0
-    obstacles.splice(0)
-    energydrinks.splice(0)
-    distance = 0
-    life = 100
+    player.isAlive = true;
+    player.isGround = true;
+    player.x = 0;
+    player.y = 0;
+    obstacles.splice(0);
+    energydrinks.splice(0);
+    distance = 0;
+    life = 100;
 }
-
 
 //youtube iframe player api で youtube musicのIDでいける (こっちのほうが再生開始とか空白が少ないから正確)←NO
