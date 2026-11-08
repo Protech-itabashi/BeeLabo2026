@@ -1,6 +1,7 @@
 const canvas = document.getElementById("mainCanvas");
 const ctx = canvas.getContext("2d");
 const input = document.getElementById("BPM");
+const offsettag = document.getElementById("offset");
 
 function getRandomArbitrary(min, max) {
     return Math.random() * (max - min) + min;
@@ -12,7 +13,7 @@ const MIN_INTERVAL = 200;
 const MAX_INTERVAL = 500;
 const SPEED = 4.0;
 const LIFE_SPEED = 0.1;
-const SCROLL_SPEED = 10.0;
+// const SCROLL_SPEED = 10.0;
 const THEGROUND = 400 - 51 + 8;
 const PLAYER_WIDTH = 75;
 const PLAYER_HEIGHT = 51;
@@ -24,10 +25,12 @@ const MIN_OBSTACLE_WIDTH = 20;
 const MAX_OBSTACLE_WIDTH = 40;
 
 let BPM = 0;
+let offset = 0;
+let SCROLL_SPEED = ((CANVAS_WIDTH / 4) / BPM);
 let timer;
 timer = 0;
 tickSound = new Audio("./sounds/se_tick.mp3");
-songSound = new Audio("./sounds/maou_short_14_shining_star.mp3");
+songSound = new Audio("./sounds/se_marunouchi110.mp3");
 songSound.loop = true;
 // songSound = new Audio("C:\\Users\\protech\\Documents\\GitHub\\BeeLabo2026\\sounds\\se_ditto.mp3")
 
@@ -81,7 +84,7 @@ class EnergyDrink {
     hit() {
         this.hitSound.pause();
         this.hitSound.currentTime = 0;
-        this.hitSound.play();
+        // this.hitSound.play();
     }
 
     draw(ctx) {
@@ -272,8 +275,10 @@ function tick() {
             tickSound.currentTime = 0;
             console.log("beat");
             tickSound.play();
-            obstacles.push(new Obstacle(1330, 10, 20, 50));
-            energydrinks.push(new EnergyDrink(1350, 100, 20, 50));
+            player.jump();
+            //あとでもどす
+            obstacles.push(new Obstacle(1000 + offset, 10, 20, 50));
+            energydrinks.push(new EnergyDrink((1005 + offset), 100, 20, 50));
             timer -= BPM;
         }
 
@@ -291,6 +296,7 @@ function tick() {
                 player.draw(ctx); //ここで描画することで更新されるっぽい
                 gameState = GAME_STATE_GAMEOVER;
             }
+            //あとでもどす
         }
 
         for (const energydrink of energydrinks) {
@@ -374,9 +380,14 @@ window.addEventListener("keydown", (e) => {
 
 input.addEventListener("change", (e) => {
     BPM = 3600 / Number(Number(e.target.value));
+    SCROLL_SPEED = ((CANVAS_WIDTH / 4) / BPM);
     console.log(BPM);
 });
 //bpmをtick何個分か計算
+
+offsettag.addEventListener("change", (e) => {
+    offset = Number(Number(e.target.value));
+});
 
 //クラスの頭文字は大文字、コンストラクター（const）の頭文字は小文字にすることが多い
 //よく出てくる数とか色は名前がついてたほうがわかりやすい
