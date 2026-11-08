@@ -190,6 +190,8 @@ let frame = 0;
 let gameState = GAME_STATE_TITLE;
 let distance = 0;
 let life = 100;
+let obstaclerate = 0.8;
+let energydrinksrate = 0.3;
 
 const obstacles = [];
 const energydrinks = [];
@@ -272,8 +274,12 @@ function tick() {
             tickSound.currentTime = 0;
             console.log("beat");
             tickSound.play();
-            obstacles.push(new Obstacle(1330, 10, 20, 50));
-            energydrinks.push(new EnergyDrink(1350, 100, 20, 50));
+            if (Math.random() <= obstaclerate) {
+                obstacles.push(new Obstacle(1330, 10, 20, 50));
+            }
+            if (Math.random() <= energydrinksrate) {
+                energydrinks.push(new EnergyDrink(1350, 100, 20, 50));
+            }
             timer -= BPM;
         }
 
@@ -344,6 +350,14 @@ window.addEventListener("keydown", (e) => {
 
             // BGM を最初から再生
             songSound.currentTime = 0;
+            console.log(
+                "INFO",
+                songSound.canPlayType("audio/mpeg"),
+                songSound.error,
+                songSound.networkState,
+                songSound.readyState,
+                songSound.src,
+            )
             songSound.play().catch((error) => {
                 console.error("BGMの再生に失敗しました:", error);
             });
