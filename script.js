@@ -296,6 +296,8 @@ function tick() {
                 player.die();
                 player.draw(ctx); //ここで描画することで更新されるっぽい
                 gameState = GAME_STATE_GAMEOVER;
+                songSound.pause();
+                songSound.currentTime = 0;
             }
         }
 
@@ -316,6 +318,9 @@ function tick() {
             player.hit();
             player.draw(ctx); //ここで描画することで更新されるっぽい
             gameState = GAME_STATE_GAMEOVER;
+            songSound.pause();
+            songSound.currentTime = 0;
+
         }
 
         ctx.font = "normal 15px SANS-SERIF";
