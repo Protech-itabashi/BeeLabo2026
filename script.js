@@ -186,6 +186,7 @@ class Player {
 const GAME_STATE_TITLE = 0;
 const GAME_STATE_INGAME = 1;
 const GAME_STATE_GAMEOVER = 2;
+const GAME_STATE_CLEAR = 3;
 
 const player = new Player(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT);
 
@@ -210,6 +211,9 @@ class Screen {
         if (gameState === GAME_STATE_TITLE) {
             ctx.drawImage(this.startImage, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
         } else if (gameState === GAME_STATE_GAMEOVER) {
+            ctx.drawImage(this.endImage, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            console.log("gameoba");
+        } else if (gameState === GAME_STATE_CLEAR) {
             ctx.drawImage(this.endImage, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
             console.log("gameoba");
         }
@@ -250,7 +254,7 @@ function tick() {
         // console.log(BPM)
         frame++;
         distance += SCROLL_SPEED;
-        life -= LIFE_SPEED;
+        // life -= LIFE_SPEED;
         // x = (x + frame / 50) % 500;
 
         player.update();
@@ -269,6 +273,13 @@ function tick() {
 
         player.draw(ctx);
         //ctx.drawImage(character, x, y, 75, 51);
+        if (player.isAlive && songSound.currentTime >= songSound.duration) {
+            ctx.fillStyle = "#ff0000";
+            ctx.fillRect(0, 400, CANVAS_WIDTH, CANVASGROUND_HEIGHT);
+            gameState = GAME_STATE_CLEAR;
+
+
+        }
 
         timer++;
 
@@ -347,6 +358,10 @@ function tick() {
     } else if (gameState === GAME_STATE_GAMEOVER) {
         screen.draw(ctx);
         ctx.fillText(`${distance / 100}m`, 15, 15);
+    } else if (gameState === GAME_STATE_CLEAR) {
+        screen.draw(ctx);
+        ctx.fillText(`${distance / 100}m`, 15, 15);
+
     }
     requestAnimationFrame(tick);
 }
@@ -368,6 +383,7 @@ window.addEventListener("keydown", (e) => {
                 songSound.readyState,
                 songSound.src,
             )
+            console.log("長さ=", songSound.duration)
             songSound.play().catch((error) => {
                 console.error("BGMの再生に失敗しました:", error);
             });
