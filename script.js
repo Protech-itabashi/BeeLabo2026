@@ -7,8 +7,10 @@ function getRandomArbitrary(min, max) {
     return Math.random() * (max - min) + min;
 }
 
-const title = new Image();
-title.src = "./images/PressSpace.png";
+const background = new Image();
+const ground = new Image();
+background.src = "./images/Background.png";
+ground.src = "./images/Ground.png";
 const MIN_INTERVAL = 200;
 const MAX_INTERVAL = 500;
 const SPEED = 4.0;
@@ -17,7 +19,7 @@ const LIFE_SPEED = 0.1;
 const THEGROUND = 400 - 51 + 8;
 const PLAYER_WIDTH = 75;
 const PLAYER_HEIGHT = 51;
-const GROUND_HEIGHT = 410; //キャラクターや障害物のGROUND
+const GROUND_HEIGHT = 405; //キャラクターや障害物のGROUND
 const CANVAS_WIDTH = 1000;
 const CANVAS_HEIGHT = 500;
 const CANVASGROUND_HEIGHT = CANVAS_HEIGHT - 400; //見た目のGROUND
@@ -254,16 +256,14 @@ function tick() {
         // console.log(BPM)
         frame++;
         distance += SCROLL_SPEED;
-        // life -= LIFE_SPEED;
+        life -= LIFE_SPEED;
         // x = (x + frame / 50) % 500;
 
         player.update();
 
-        ctx.fillStyle = "#1a5585";
-        ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+        ctx.drawImage(background, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-        ctx.fillStyle = "#256d17";
-        ctx.fillRect(0, 400, CANVAS_WIDTH, CANVASGROUND_HEIGHT);
+        ctx.drawImage(ground, 0, 400, CANVAS_WIDTH, CANVASGROUND_HEIGHT);
 
         ctx.fillStyle = "#2d362d";
         ctx.fillRect(0, 0, CANVAS_WIDTH, 30);
